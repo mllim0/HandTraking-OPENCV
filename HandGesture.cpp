@@ -102,20 +102,24 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
 			Point s = contours[index][defects[i][0]];
 			Point e = contours[index][defects[i][1]];
 			Point f = contours[index][defects[i][2]];
-			float depth = ((float)defects[i][3] / 256.0);
+			float depth = (float)defects[i][3] / 256.0;
+
+			float porcentajeRec = 0.08f;
+			float ladoMedioRec = (boundRect.height + boundRect.width)/2;
+			float porcentajeLado = ladoMedioRec * porcentajeRec;
+			
 			double angle = getAngle(s, e, f);
 		
                         // CODIGO 3.2
-                        /irar los defectos de convexidad
-						ii depth > 30)
-						{i
+                        // filtrar y mostrar los defectos de convexidad
+						if (angle < 90 && depth > porcentajeRec)
+						{
 							circle(output_img, f, 5, Scalar(0,255,0), 3);			
 						}
 						
-						if (depth > 30){
+						if (depth > porcentajeRec){
 							circle(output_img, s, 5, Scalar(0,0,255), 3);
 							cont++;
-							
 						}
 						
 							
