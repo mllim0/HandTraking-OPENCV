@@ -13,7 +13,6 @@
 using namespace std;
 using namespace cv;
 
-
 int main(int argc, char** argv)
 {
 
@@ -54,7 +53,7 @@ int main(int argc, char** argv)
 	HandGesture mano;
 	// iniciamos el proceso de obtenci�n del modelo del fondo
 	
-
+	start = std::chrono::system_clock::now();
 	for (;;)
 	{
 		cap >> frame; //Captura de frames

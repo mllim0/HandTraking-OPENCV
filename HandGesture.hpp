@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <chrono>
+
+static auto start = std::chrono::system_clock::now();
  
 class HandGesture {
 

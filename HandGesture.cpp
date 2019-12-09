@@ -38,7 +38,8 @@ double HandGesture::getAngle(Point s, Point e, Point f) {
 	return (angle * 180.0/CV_PI);
 }
 void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
-	
+	static bool ncalls = false;
+	static Point centroMasaManoIni;
 	vector<vector<Point> > contours;
 	Mat temp_mask;
 	mask.copyTo(temp_mask);
@@ -92,9 +93,10 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
 	//	Bounding rect
 	Rect boundRect;	
 	vector<Point> counterPoly;
+
 	// Generamos el bounding rect para el contorno de la mano.
 	approxPolyDP( Mat(contours[index]), counterPoly, 3, true );
-    boundRect = boundingRect( Mat(counterPoly));
+	boundRect = boundingRect( Mat(counterPoly));
 	rectangle(output_img, boundRect.tl(), boundRect.br(), Scalar(155,155,0));
 		
 		int contRojo = 0, contVerde = 0;
@@ -137,6 +139,37 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
 				{
 					putText(output_img,std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
 				}
-				
+
+				auto actualTime = std::chrono::system_clock::now();
+				std::chrono::duration<float> diferenciaTiempo = actualTime - start;
+				if(ncalls)
+				{
+					ncalls = false;
+					Point topLeft = boundRect.tl();
+					size_t x = (topLeft.x + boundRect.width) / 2;
+					size_t y = (topLeft.y + boundRect.height) / 2;
+					centroMasaManoIni = Point(x,y);
+				}
+				else if (diferenciaTiempo.count() >= 0.3f)
+				{
+					ncalls = true;
+					start = std::chrono::system_clock::now();
+					
+					Point topLeft = boundRect.tl();
+					size_t x = (topLeft.x + boundRect.width) / 2;
+					size_t y = (topLeft.y + boundRect.height) / 2;
+					Point currentPoint(x,y);
+					Point diferencia = currentPoint - centroMasaManoIni;
+					if(diferencia.x > 10)
+					{
+						putText(output_img, "Derecha", Point(80,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+					}
+					else if (diferencia.x < -10)
+					{
+						putText(output_img, "Izquierda", Point(80,80), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+					}
+					
+				}
+							
 		
 }
