@@ -15,13 +15,13 @@ static auto start = std::chrono::system_clock::now();
 class HandGesture {
 
 public:
-	HandGesture();
-	void FeaturesDetection(cv::Mat mask, cv::Mat output_img);
-	
+  HandGesture();
+  void FeaturesDetection(cv::Mat mask, cv::Mat output_img);
+  
 
 private:
-	double getAngle(cv::Point s, cv::Point e, cv::Point f);
-	
-	
+  double getAngle(cv::Point s, cv::Point e, cv::Point f);
+  
+  
 
 };
