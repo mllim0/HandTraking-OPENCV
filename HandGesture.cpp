@@ -10,7 +10,7 @@
 #include <string>
 #include <sstream>
 
-#define LOG(X) std::cerr << x << std::endl
+#define LOG(X) std::cerr << X << std::endl
 
 using namespace cv;
 using namespace std;
@@ -97,14 +97,14 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
     boundRect = boundingRect( Mat(counterPoly));
 	rectangle(output_img, boundRect.tl(), boundRect.br(), Scalar(155,155,0));
 		
-		int cont = 0;
+		int contRojo = 0, contVerde = 0;
 		for (int i = 0; i < defects.size(); i++) {
 			Point s = contours[index][defects[i][0]];
 			Point e = contours[index][defects[i][1]];
 			Point f = contours[index][defects[i][2]];
 			float depth = (float)defects[i][3] / 256.0;
 
-			float porcentajeRec = 0.08f;
+			float porcentajeRec = 0.1f;
 			float ladoMedioRec = (boundRect.height + boundRect.width)/2;
 			float porcentajeLado = ladoMedioRec * porcentajeRec;
 			
@@ -112,27 +112,31 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
 		
                         // CODIGO 3.2
                         // filtrar y mostrar los defectos de convexidad
-						if (angle < 90 && depth > porcentajeRec)
+						if (angle < 90 && depth > porcentajeLado)
 						{
-							circle(output_img, f, 5, Scalar(0,255,0), 3);			
+							circle(output_img, f, 5, Scalar(0,255,0), 3);	
+							contVerde++;		
 						}
 						
-						if (depth > porcentajeRec){
+						if (depth > porcentajeLado){
 							circle(output_img, s, 5, Scalar(0,0,255), 3);
-							cont++;
+							contRojo++;
 						}
 						
 							
-						
                         //...
 						
 
-        }
-
-		stringstream ss;
-		string salida;
-		ss << cont;
-		ss >> salida;
-		putText(output_img,salida, Point(10,10), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+				}
+				
+				if (contVerde >= 1)
+				{
+					putText(output_img,std::to_string(contVerde+1), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+				}
+				else 
+				{
+					putText(output_img,std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+				}
+				
 		
 }
