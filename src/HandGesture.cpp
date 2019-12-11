@@ -82,6 +82,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   }
   // Error de los pixeles
   motionError_ = ladoMedioRec * PORCEN_MOTION;
+  // Capturar movimiento de la mano
   motionTracking();
 
   if (contVerde >= 1)
@@ -177,7 +178,7 @@ std::string HandGesture::motionCapture(const Point& diferencia)
   }
   else
   {
-    if (isParado) movimiento += " Parado";
+    if (isParado) movimiento = "Parado";
   }
   
   // Aqui eje y
