@@ -15,12 +15,12 @@
 using namespace cv;
 using namespace std;
 
-HandGesture::HandGesture() {
-  
-}
+HandGesture::HandGesture()
+{}
 
 
-double HandGesture::getAngle(Point s, Point e, Point f) {
+double HandGesture::getAngle(Point s, Point e, Point f)
+{
   
   double v1[2],v2[2];
   v1[0] = s.x - f.x;
@@ -37,14 +37,16 @@ double HandGesture::getAngle(Point s, Point e, Point f) {
   if (angle < -CV_PI) angle += 2 * CV_PI;
   return (angle * 180.0/CV_PI);
 }
-void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
+
+void HandGesture::FeaturesDetection(Mat mask, Mat output_img) 
+{
 
   static bool isFirstFrame = false;
   static Point centroMasaManoIni;
-  vector<vector<Point> > contours;
+  vector<vector<Point>> contours;
   Mat temp_mask;
   mask.copyTo(temp_mask);
-  int index = -1;
+  int index = 0;
 
         // CODIGO 3.1
         // detección del contorno de la mano y selección del contorno más largo
@@ -56,23 +58,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
     // pintar el contorno
     //...
 
-    if (!temp_mask.empty())
-    {
-      int aux = contours[0].size();
-      index = 0;
-    
-      for (size_t i = 1; i < contours.size();i++)
-      {
-        if (contours[i].size() > (size_t)aux)
-        {
-          index = i;
-          aux = contours[i].size();
-        }
-        
-      }
-
-      drawContours(output_img, contours, index, cv::Scalar(255,0,0), 2, 8, vector<Vec4i>(), 0, Point());
-    }
+    index = pintarContorno(output_img, contours, temp_mask);
 
   //obtener el convex hull  
   vector<int> hull;
@@ -106,10 +92,10 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
       Point s = contours[index][defects[i][0]];
       Point e = contours[index][defects[i][1]];
       Point f = contours[index][defects[i][2]];
-      float depth = (float)defects[i][3] / 256.0;
 
-      float porcentajeRec = 0.1f;
-      float ladoMedioRec = (boundRect.height + boundRect.width)/2;
+      float depth          = (float)defects[i][3] / 256.0;
+      float porcentajeRec  = 0.1f;
+      float ladoMedioRec   = (boundRect.height + boundRect.width)/2;
       float porcentajeLado = ladoMedioRec * porcentajeRec;
       
       double angle = getAngle(s, e, f);
@@ -126,9 +112,6 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
         circle(output_img, s, 5, Scalar(0,0,255), 3);
         contRojo++;
       }
-            
-              
-        //...
     }
         
     if (contVerde >= 1)
@@ -173,5 +156,27 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
       
     }
               
-    
+}
+
+int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Point>>& contours, Mat mask)
+{
+  int index = -1;
+
+  if (!mask.empty())
+  {
+    int aux = contours[0].size();
+  
+    for (size_t i = 1; i < contours.size();i++)
+    {
+      if (contours[i].size() > (size_t)aux)
+      {
+        index = i;
+        aux = contours[i].size();
+      }
+    }
+    drawContours(output_img, contours, index, cv::Scalar(255,0,0), 2, 8, vector<Vec4i>(), 0, Point());
+  }
+
+  assert(index != -1);
+  return index;
 }

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+ #include "Draw.h"
 
 static auto start = std::chrono::system_clock::now();
  
@@ -20,8 +21,7 @@ public:
   
 
 private:
-  double getAngle(cv::Point s, cv::Point e, cv::Point f);
+  double getAngle       (cv::Point s, cv::Point e, cv::Point f);
+  int    pintarContorno (Mat output_img, const std::vector<std::vector<Point>>& contours, Mat mask);
   
-  
-
 };
