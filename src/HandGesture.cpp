@@ -48,32 +48,24 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   mask.copyTo(temp_mask);
   int index = 0;
 
-        // CODIGO 3.1
-        // detección del contorno de la mano y selección del contorno más largo
-        //...
-    Point centro(10,10);
-    circle(temp_mask, centro, 5, cv::Scalar(255));
-    findContours(temp_mask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+  // CODIGO 3.1
+  // detección del contorno de la mano y selección del contorno más largo
 
-    // pintar el contorno
-    //...
+  Point centro(10,10);
+  circle(temp_mask, centro, 5, cv::Scalar(255));
+  findContours(temp_mask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
-    index = pintarContorno(output_img, contours, temp_mask);
+  // pintar el contorno
+  index = pintarContorno(output_img, contours, temp_mask);
 
   //obtener el convex hull  
   vector<int> hull;
   convexHull(contours[index],hull);
   
   // pintar el convex hull
-  Point pt0 = contours[index][hull[hull.size()-1]];
-  for (size_t i = 0; i < hull.size(); i++)
-  {
-    Point pt = contours[index][hull[i]];
-    line(output_img, pt0, pt, Scalar(0, 0, 255), 2, CV_AA);
-    pt0 = pt;
-  }
+  pintarConvexHull(output_img, hull, contours, index);
   
-        //obtener los defectos de convexidad
+  //obtener los defectos de convexidad
   vector<Vec4i> defects;
   convexityDefects(contours[index], hull, defects);
 
@@ -179,4 +171,18 @@ int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Po
 
   assert(index != -1);
   return index;
+}
+
+void HandGesture::pintarConvexHull (Mat output_img, 
+                                    const std::vector<int>& hull, 
+                                    const std::vector<std::vector<Point>>& contours,
+                                    int index)
+{
+  Point pt0 = contours[index][hull[hull.size()-1]];
+  for (size_t i = 0; i < hull.size(); i++)
+  {
+    Point pt = contours[index][hull[i]];
+    line(output_img, pt0, pt, Scalar(0, 0, 255), 2, CV_AA);
+    pt0 = pt;
+  }
 }
