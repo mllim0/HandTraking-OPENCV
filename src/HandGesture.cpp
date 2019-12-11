@@ -3,7 +3,6 @@
 HandGesture::HandGesture()
 {}
 
-
 double HandGesture::getAngle(Point s, Point e, Point f)
 {
   double v1[2],v2[2];

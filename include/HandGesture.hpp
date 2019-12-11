@@ -10,7 +10,9 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+
 #include "Draw.h"
+#include "BoundingRect.h"
 
 #define PORCEN_DEPTH 0.1
 #define PORCEN_MOTION 0.05
@@ -25,8 +27,9 @@ class HandGesture {
 
 public:
 
-  std::string movimientoMano_;
-  Rect        boundRect_;
+  std::string   movimientoMano_;
+  BoundingRect  boundRect_;
+
   float       depthError_;
   float       motionError_;
 
