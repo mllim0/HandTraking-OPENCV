@@ -88,9 +88,8 @@ int main()
     // mostramos el resultado de la sobstracci�n de fondo
     imshow("Reconocimiento", frame); // Sin tocar
     imshow("Máscara", bgmask);  // Binario
-    
+
     // mostramos el resultado del reconocimento de gestos
-    
   }
   
   destroyWindow("Reconocimiento");

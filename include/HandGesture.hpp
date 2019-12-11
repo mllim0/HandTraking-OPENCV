@@ -18,6 +18,8 @@ class HandGesture {
 public:
 
   std::string movimientoMano_;
+  float depthError_;
+  float motionError_;
 
   
 public:

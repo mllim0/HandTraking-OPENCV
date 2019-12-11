@@ -12,6 +12,7 @@
 
 
 #define PORCEN_DEPTH 0.1
+#define PORCEN_MOTION 0.05
 #define LOG(X) std::cerr << X << std::endl
 
 using namespace cv;
@@ -49,6 +50,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   Mat temp_mask;
   mask.copyTo(temp_mask);
   int index = 0;
+  float ladoMedioRec;
 
   // CODIGO 3.1
   // detección del contorno de la mano y selección del contorno más largo
@@ -79,26 +81,28 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     Point s = contours[index][defects[i][0]];
     Point e = contours[index][defects[i][1]];
     Point f = contours[index][defects[i][2]];
-    float depth          = (float)defects[i][3] / 256.0;
-    float ladoMedioRec   = (boundRect.height + boundRect.width)/2;
-    float porcentajeLado = ladoMedioRec * PORCEN_DEPTH;
-    
+
+    float depth  = (float)defects[i][3] / 256.0;
+    ladoMedioRec = (boundRect.height + boundRect.width)/2;
     double angle = getAngle(s, e, f);
+    depthError_  = ladoMedioRec * PORCEN_DEPTH;
   
     // CODIGO 3.2
     // filtrar y mostrar los defectos de convexidad
-    if (angle < 90 && depth > porcentajeLado)
+    if (angle < 90 && depth > depthError_)
     {
       circle(output_img, f, 5, Scalar(0,255,0), 3);  
       contVerde++;    
     }
     
-    if (depth > porcentajeLado){
+    if (depth > depthError_){
       circle(output_img, s, 5, Scalar(0,0,255), 3);
       contRojo++;
     }
   }
-        
+  // Error de los pixeles
+  motionError_ = ladoMedioRec * PORCEN_MOTION;
+
   if (contVerde >= 1)
   {
     putText(output_img,std::to_string(contVerde+1), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
@@ -191,11 +195,11 @@ std::string HandGesture::motionCapture(const Point& diferencia)
   bool isParado = false;
   std::string movimiento;
 
-  if(diferencia.x > 10)
+  if(diferencia.x > motionError_)
   {
     movimiento += "Izquierda";  
   }
-  else if (diferencia.x < -10)
+  else if (diferencia.x < -motionError_)
   {
     movimiento += "Derecha";
   }
@@ -205,11 +209,11 @@ std::string HandGesture::motionCapture(const Point& diferencia)
   }
   
 
-  if(diferencia.y > 10)
+  if(diferencia.y > motionError_)
   {
     movimiento += " Abajo";  
   }
-  else if (diferencia.y < -10)
+  else if (diferencia.y < -motionError_)
   {
     movimiento += " Arriba";
   }
