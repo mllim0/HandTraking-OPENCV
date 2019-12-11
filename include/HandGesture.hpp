@@ -30,8 +30,8 @@ public:
   std::string   movimientoMano_;
   BoundingRect  boundRect_;
 
-  float       depthError_;
-  float       motionError_;
+  float depthError_;
+  float motionError_;
 
   
 public:

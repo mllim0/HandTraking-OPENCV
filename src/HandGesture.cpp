@@ -134,14 +134,14 @@ void HandGesture::pintarConvexHull (Mat output_img,
 
 Rect HandGesture::getBoundingRect (const std::vector<std::vector<Point>>& contours, int index)
 {
-  Rect boundRect_;
+  Rect boundRect;
   vector<Point> counterPoly;
 
   // Generamos el bounding rect para el contorno de la mano.
   approxPolyDP( Mat(contours[index]), counterPoly, 3, true );
-  boundRect_ = boundingRect( Mat(counterPoly));
+  boundRect = boundingRect( Mat(counterPoly));
 
-  return boundRect_;
+  return boundRect;
 }
 
 std::string HandGesture::motionCapture(const Point& diferencia)
@@ -196,21 +196,13 @@ void HandGesture::motionTracking()
   if(isFirstFrame)
   {
     isFirstFrame  = false;
-    Point topLeft = boundRect_.tl();
-    size_t x = (topLeft.x + boundRect_.width) / 2;
-    size_t y = (topLeft.y + boundRect_.height) / 2;
-    centroMasaManoIni = Point(x,y);
+    centroMasaManoIni = boundRect_.centro_;
   }
   else if (diferenciaTiempo.count() >= 0.3f)
   {
     isFirstFrame = true;
     start = std::chrono::system_clock::now();
-    
-    Point topLeft = boundRect_.tl();
-    size_t x = (topLeft.x + boundRect_.width) / 2;
-    size_t y = (topLeft.y + boundRect_.height) / 2;
-    Point currentPoint(x,y);
-    Point diferencia = currentPoint - centroMasaManoIni;
+    Point diferencia = boundRect_.centro_ - centroMasaManoIni;
     motionCapture(diferencia);
   }
 }
