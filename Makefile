@@ -1,10 +1,22 @@
-CCX=g++
+CXX		  := g++
+CXX_FLAGS := -Wall -Wextra -std=c++17 -ggdb
 
-CXXFLAGS= -g
+BIN		:= bin
+SRC		:= src
+INCLUDE	:= include
+
+LIBRARIES	:= `pkg-config --cflags opencv` `pkg-config --libs opencv`
+EXECUTABLE	:= main
 
 
-OPENCV= `pkg-config --cflags opencv` `pkg-config --libs opencv`
+all: $(BIN)/$(EXECUTABLE)
 
-OBJS = *.cpp
-all: ${OBJS}
-	$(CCX) $(CXXFLAGS)   -o prueba ${OBJS} $(OPENCV)
+run: clean all
+	clear
+	./$(BIN)/$(EXECUTABLE)
+
+$(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
+	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $@ $(LIBRARIES)
+
+clean:
+	-rm $(BIN)/*

@@ -61,9 +61,9 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
       int aux = contours[0].size();
       index = 0;
     
-      for (int i = 1; i < contours.size();i++)
+      for (size_t i = 1; i < contours.size();i++)
       {
-        if (contours[i].size() > aux)
+        if (contours[i].size() > (size_t)aux)
         {
           index = i;
           aux = contours[i].size();
@@ -80,7 +80,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
   
   // pintar el convex hull
   Point pt0 = contours[index][hull[hull.size()-1]];
-  for (int i = 0; i < hull.size(); i++)
+  for (size_t i = 0; i < hull.size(); i++)
   {
     Point pt = contours[index][hull[i]];
     line(output_img, pt0, pt, Scalar(0, 0, 255), 2, CV_AA);
@@ -101,7 +101,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img) {
   rectangle(output_img, boundRect.tl(), boundRect.br(), Scalar(155,155,0));
     
     int contRojo = 0, contVerde = 0;
-    for (int i = 0; i < defects.size(); i++)
+    for (size_t i = 0; i < defects.size(); i++)
     {
       Point s = contours[index][defects[i][0]];
       Point e = contours[index][defects[i][1]];

@@ -126,11 +126,11 @@ void  MyBGSubtractorColor::ObtainBGMask(cv::Mat frame, cv::Mat &bgmask) {
     Mat hls_frame;
     vector<cv::Mat> imagenes(18);
     cvtColor(frame, hls_frame, CV_BGR2HLS);
-    int j = 0;
+    size_t j = 0;
     int a,b,c,d,e,f;
     //cv::Scalar h_l(h_low), h_u(h_up), s_l(s_low), s_u(s_up), l_l(l_low), l_u(l_up);
 
-    for (int i = 0; i < 18; i++)
+    for (auto i = 0; i < 18; i++)
     {
       
       if ((means[i][0] - h_low) > 0) 

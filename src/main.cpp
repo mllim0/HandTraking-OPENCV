@@ -13,13 +13,11 @@
 using namespace std;
 using namespace cv;
 
-int main(int argc, char** argv)
+int main()
 {
 
   Mat frame, bgmask, out_frame; //frame -> webcam / bgmask -> img binaria resultante / sustracción out-frame -> La salida
   
-
-
   //Abrimos la webcam
   VideoCapture cap;
   cap.open(0);
