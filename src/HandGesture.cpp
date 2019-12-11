@@ -70,12 +70,9 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   convexityDefects(contours[index], hull, defects);
 
   //  Bounding rect
-  Rect boundRect;  
-  vector<Point> counterPoly;
+  Rect boundRect = getBoundingRect(contours, index); 
 
-  // Generamos el bounding rect para el contorno de la mano.
-  approxPolyDP( Mat(contours[index]), counterPoly, 3, true );
-  boundRect = boundingRect( Mat(counterPoly));
+  // Mostramos el boundingRect 
   rectangle(output_img, boundRect.tl(), boundRect.br(), Scalar(155,155,0));
     
     int contRojo = 0, contVerde = 0;
@@ -185,4 +182,16 @@ void HandGesture::pintarConvexHull (Mat output_img,
     line(output_img, pt0, pt, Scalar(0, 0, 255), 2, CV_AA);
     pt0 = pt;
   }
+}
+
+Rect HandGesture::getBoundingRect (const std::vector<std::vector<Point>>& contours, int index)
+{
+  Rect boundRect;
+  vector<Point> counterPoly;
+
+  // Generamos el bounding rect para el contorno de la mano.
+  approxPolyDP( Mat(contours[index]), counterPoly, 3, true );
+  boundRect = boundingRect( Mat(counterPoly));
+
+  return boundRect;
 }

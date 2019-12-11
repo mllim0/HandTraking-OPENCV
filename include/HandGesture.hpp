@@ -23,6 +23,9 @@ public:
 private:
   double getAngle         (cv::Point s, cv::Point e, cv::Point f);
   int    pintarContorno   (Mat output_img, const std::vector<std::vector<Point>>& contours, Mat mask);
-  void   pintarConvexHull (Mat output_img, const std::vector<int>& hull, const std::vector<std::vector<Point>>& contours, int index);
-  
+  void   pintarConvexHull (Mat output_img, 
+                           const std::vector<int>& hull,
+                           const std::vector<std::vector<Point>>& contours, 
+                           int index);
+  Rect getBoundingRect    (const std::vector<std::vector<Point>>& contours, int index);
 };
