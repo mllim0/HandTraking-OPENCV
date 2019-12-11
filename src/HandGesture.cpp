@@ -6,7 +6,6 @@ HandGesture::HandGesture()
 
 double HandGesture::getAngle(Point s, Point e, Point f)
 {
-  
   double v1[2],v2[2];
   v1[0] = s.x - f.x;
   v1[1] = s.y - f.y;
@@ -18,14 +17,13 @@ double HandGesture::getAngle(Point s, Point e, Point f)
   double ang2 = atan2(v2[1],v2[0]);
 
   double angle = ang1 - ang2;
-  if (angle > CV_PI) angle -= 2 * CV_PI;
+  if (angle > CV_PI)  angle -= 2 * CV_PI;
   if (angle < -CV_PI) angle += 2 * CV_PI;
   return (angle * 180.0/CV_PI);
 }
 
 void HandGesture::FeaturesDetection(Mat mask, Mat output_img) 
 {
-
   vector<vector<Point>> contours;
   Mat temp_mask;
   mask.copyTo(temp_mask);
@@ -34,9 +32,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
 
   // CODIGO 3.1
   // detección del contorno de la mano y selección del contorno más largo
-
-  Point centro(10,10);
-  circle(temp_mask, centro, 5, cv::Scalar(255));
+  circle(temp_mask, Point(10,10), 5, cv::Scalar(255));
   findContours(temp_mask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
   index = pintarContorno(output_img, contours, temp_mask);
@@ -63,8 +59,8 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     Point f = contours[index][defects[i][2]];
 
     float depth  = (float)defects[i][3] / 256.0;
-    ladoMedioRec = (boundRect_.height + boundRect_.width)/2;
     double angle = getAngle(s, e, f);
+    ladoMedioRec = (boundRect_.height + boundRect_.width)/2;
     depthError_  = ladoMedioRec * PORCEN_DEPTH;
   
     // CODIGO 3.2
