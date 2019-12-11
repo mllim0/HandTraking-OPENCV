@@ -10,6 +10,8 @@
 #include <string>
 #include <sstream>
 
+
+#define PORCEN_DEPTH 0.1
 #define LOG(X) std::cerr << X << std::endl
 
 using namespace cv;
@@ -55,14 +57,11 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   circle(temp_mask, centro, 5, cv::Scalar(255));
   findContours(temp_mask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
-  // pintar el contorno
   index = pintarContorno(output_img, contours, temp_mask);
 
   //obtener el convex hull  
   vector<int> hull;
   convexHull(contours[index],hull);
-  
-  // pintar el convex hull
   pintarConvexHull(output_img, hull, contours, index);
   
   //obtener los defectos de convexidad
@@ -71,80 +70,70 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
 
   //  Bounding rect
   Rect boundRect = getBoundingRect(contours, index); 
-
   // Mostramos el boundingRect 
   rectangle(output_img, boundRect.tl(), boundRect.br(), Scalar(155,155,0));
     
-    int contRojo = 0, contVerde = 0;
-    for (size_t i = 0; i < defects.size(); i++)
-    {
-      Point s = contours[index][defects[i][0]];
-      Point e = contours[index][defects[i][1]];
-      Point f = contours[index][defects[i][2]];
-
-      float depth          = (float)defects[i][3] / 256.0;
-      float porcentajeRec  = 0.1f;
-      float ladoMedioRec   = (boundRect.height + boundRect.width)/2;
-      float porcentajeLado = ladoMedioRec * porcentajeRec;
-      
-      double angle = getAngle(s, e, f);
+  int contRojo = 0, contVerde = 0;
+  for (size_t i = 0; i < defects.size(); i++)
+  {
+    Point s = contours[index][defects[i][0]];
+    Point e = contours[index][defects[i][1]];
+    Point f = contours[index][defects[i][2]];
+    float depth          = (float)defects[i][3] / 256.0;
+    float ladoMedioRec   = (boundRect.height + boundRect.width)/2;
+    float porcentajeLado = ladoMedioRec * PORCEN_DEPTH;
     
-      // CODIGO 3.2
-      // filtrar y mostrar los defectos de convexidad
-      if (angle < 90 && depth > porcentajeLado)
-      {
-        circle(output_img, f, 5, Scalar(0,255,0), 3);  
-        contVerde++;    
-      }
-      
-      if (depth > porcentajeLado){
-        circle(output_img, s, 5, Scalar(0,0,255), 3);
-        contRojo++;
-      }
+    double angle = getAngle(s, e, f);
+  
+    // CODIGO 3.2
+    // filtrar y mostrar los defectos de convexidad
+    if (angle < 90 && depth > porcentajeLado)
+    {
+      circle(output_img, f, 5, Scalar(0,255,0), 3);  
+      contVerde++;    
     }
+    
+    if (depth > porcentajeLado){
+      circle(output_img, s, 5, Scalar(0,0,255), 3);
+      contRojo++;
+    }
+  }
         
-    if (contVerde >= 1)
-    {
-      putText(output_img,std::to_string(contVerde+1), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
-    }
-    else 
-    {
-      putText(output_img,std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
-    }
+  if (contVerde >= 1)
+  {
+    putText(output_img,std::to_string(contVerde+1), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+  }
+  else 
+  {
+    putText(output_img,std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+  }
 
-    // Comprobamos que ha pasado el tiempo asignado para hacer un tracking del movimiento
-    // realizado
-    auto actualTime = std::chrono::system_clock::now();
-    std::chrono::duration<float> diferenciaTiempo = actualTime - start;
-    if(isFirstFrame)
-    {
-      isFirstFrame = false;
-      Point topLeft = boundRect.tl();
-      size_t x = (topLeft.x + boundRect.width) / 2;
-      size_t y = (topLeft.y + boundRect.height) / 2;
-      centroMasaManoIni = Point(x,y);
-    }
-    else if (diferenciaTiempo.count() >= 0.3f)
-    {
-      isFirstFrame = true;
-      start = std::chrono::system_clock::now();
-      
-      Point topLeft = boundRect.tl();
-      size_t x = (topLeft.x + boundRect.width) / 2;
-      size_t y = (topLeft.y + boundRect.height) / 2;
-      Point currentPoint(x,y);
-      Point diferencia = currentPoint - centroMasaManoIni;
-      if(diferencia.x > 10)
-      {
-        putText(output_img, "Izquierda", Point(80,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
-      }
-      else if (diferencia.x < -10)
-      {
-        putText(output_img, "Derecha", Point(80,80), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
-      }
-      
-    }
-              
+  // Comprobamos que ha pasado el tiempo asignado para hacer un tracking del movimiento
+  // realizado
+  auto actualTime = std::chrono::system_clock::now();
+  std::chrono::duration<float> diferenciaTiempo = actualTime - start;
+  if(isFirstFrame)
+  {
+    isFirstFrame = false;
+    Point topLeft = boundRect.tl();
+    size_t x = (topLeft.x + boundRect.width) / 2;
+    size_t y = (topLeft.y + boundRect.height) / 2;
+    centroMasaManoIni = Point(x,y);
+  }
+  else if (diferenciaTiempo.count() >= 0.3f)
+  {
+    isFirstFrame = true;
+    start = std::chrono::system_clock::now();
+    
+    Point topLeft = boundRect.tl();
+    size_t x = (topLeft.x + boundRect.width) / 2;
+    size_t y = (topLeft.y + boundRect.height) / 2;
+    Point currentPoint(x,y);
+    Point diferencia = currentPoint - centroMasaManoIni;
+    motionCapture(diferencia);
+  }
+  
+  mostrarMotion(output_img);
 }
 
 int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Point>>& contours, Mat mask)
@@ -153,6 +142,7 @@ int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Po
 
   if (!mask.empty())
   {
+    index = 0;
     int aux = contours[0].size();
   
     for (size_t i = 1; i < contours.size();i++)
@@ -194,4 +184,46 @@ Rect HandGesture::getBoundingRect (const std::vector<std::vector<Point>>& contou
   boundRect = boundingRect( Mat(counterPoly));
 
   return boundRect;
+}
+
+std::string HandGesture::motionCapture(const Point& diferencia)
+{
+  bool isParado = false;
+  std::string movimiento;
+
+  if(diferencia.x > 10)
+  {
+    movimiento += "Izquierda";  
+  }
+  else if (diferencia.x < -10)
+  {
+    movimiento += "Derecha";
+  }
+  else
+  {
+    isParado = true;
+  }
+  
+
+  if(diferencia.y > 10)
+  {
+    movimiento += " Abajo";  
+  }
+  else if (diferencia.y < -10)
+  {
+    movimiento += " Arriba";
+  }
+  else
+  {
+    if (isParado) movimiento += " Parado";
+  }
+  
+  // Aqui eje y
+  movimientoMano_ = movimiento;
+  return movimientoMano_;
+}
+
+void HandGesture::mostrarMotion(Mat output_img)
+{
+  putText(output_img, movimientoMano_, Point(80,80), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
 }
