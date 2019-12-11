@@ -1,23 +1,5 @@
 #include "HandGesture.hpp"
 
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/video/background_segm.hpp>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <string>
-#include <sstream>
-
-
-#define PORCEN_DEPTH 0.1
-#define PORCEN_MOTION 0.05
-#define LOG(X) std::cerr << X << std::endl
-
-using namespace cv;
-using namespace std;
-
 HandGesture::HandGesture()
 {}
 
@@ -44,8 +26,6 @@ double HandGesture::getAngle(Point s, Point e, Point f)
 void HandGesture::FeaturesDetection(Mat mask, Mat output_img) 
 {
 
-  static bool isFirstFrame = false;
-  static Point centroMasaManoIni;
   vector<vector<Point>> contours;
   Mat temp_mask;
   mask.copyTo(temp_mask);
@@ -71,9 +51,9 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   convexityDefects(contours[index], hull, defects);
 
   //  Bounding rect
-  Rect boundRect = getBoundingRect(contours, index); 
+  boundRect_ = getBoundingRect(contours, index); 
   // Mostramos el boundingRect 
-  rectangle(output_img, boundRect.tl(), boundRect.br(), Scalar(155,155,0));
+  rectangle(output_img, boundRect_.tl(), boundRect_.br(), Scalar(155,155,0));
     
   int contRojo = 0, contVerde = 0;
   for (size_t i = 0; i < defects.size(); i++)
@@ -83,7 +63,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     Point f = contours[index][defects[i][2]];
 
     float depth  = (float)defects[i][3] / 256.0;
-    ladoMedioRec = (boundRect.height + boundRect.width)/2;
+    ladoMedioRec = (boundRect_.height + boundRect_.width)/2;
     double angle = getAngle(s, e, f);
     depthError_  = ladoMedioRec * PORCEN_DEPTH;
   
@@ -102,6 +82,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   }
   // Error de los pixeles
   motionError_ = ladoMedioRec * PORCEN_MOTION;
+  motionTracking();
 
   if (contVerde >= 1)
   {
@@ -112,30 +93,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     putText(output_img,std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
   }
 
-  // Comprobamos que ha pasado el tiempo asignado para hacer un tracking del movimiento
-  // realizado
-  auto actualTime = std::chrono::system_clock::now();
-  std::chrono::duration<float> diferenciaTiempo = actualTime - start;
-  if(isFirstFrame)
-  {
-    isFirstFrame = false;
-    Point topLeft = boundRect.tl();
-    size_t x = (topLeft.x + boundRect.width) / 2;
-    size_t y = (topLeft.y + boundRect.height) / 2;
-    centroMasaManoIni = Point(x,y);
-  }
-  else if (diferenciaTiempo.count() >= 0.3f)
-  {
-    isFirstFrame = true;
-    start = std::chrono::system_clock::now();
-    
-    Point topLeft = boundRect.tl();
-    size_t x = (topLeft.x + boundRect.width) / 2;
-    size_t y = (topLeft.y + boundRect.height) / 2;
-    Point currentPoint(x,y);
-    Point diferencia = currentPoint - centroMasaManoIni;
-    motionCapture(diferencia);
-  }
+
   
   mostrarMotion(output_img);
 }
@@ -146,7 +104,7 @@ int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Po
 
   if (!mask.empty())
   {
-    index = 0;
+    index   = 0;
     int aux = contours[0].size();
   
     for (size_t i = 1; i < contours.size();i++)
@@ -154,7 +112,7 @@ int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Po
       if (contours[i].size() > (size_t)aux)
       {
         index = i;
-        aux = contours[i].size();
+        aux   = contours[i].size();
       }
     }
     drawContours(output_img, contours, index, cv::Scalar(255,0,0), 2, 8, vector<Vec4i>(), 0, Point());
@@ -180,14 +138,14 @@ void HandGesture::pintarConvexHull (Mat output_img,
 
 Rect HandGesture::getBoundingRect (const std::vector<std::vector<Point>>& contours, int index)
 {
-  Rect boundRect;
+  Rect boundRect_;
   vector<Point> counterPoly;
 
   // Generamos el bounding rect para el contorno de la mano.
   approxPolyDP( Mat(contours[index]), counterPoly, 3, true );
-  boundRect = boundingRect( Mat(counterPoly));
+  boundRect_ = boundingRect( Mat(counterPoly));
 
-  return boundRect;
+  return boundRect_;
 }
 
 std::string HandGesture::motionCapture(const Point& diferencia)
@@ -230,4 +188,33 @@ std::string HandGesture::motionCapture(const Point& diferencia)
 void HandGesture::mostrarMotion(Mat output_img)
 {
   putText(output_img, movimientoMano_, Point(80,80), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+}
+
+void HandGesture::motionTracking()
+{
+  static bool isFirstFrame = false;
+  static Point centroMasaManoIni;
+  // Comprobamos que ha pasado el tiempo asignado para hacer un tracking del movimientorealizado
+  auto actualTime = std::chrono::system_clock::now();
+  std::chrono::duration<float> diferenciaTiempo = actualTime - start;
+  if(isFirstFrame)
+  {
+    isFirstFrame  = false;
+    Point topLeft = boundRect_.tl();
+    size_t x = (topLeft.x + boundRect_.width) / 2;
+    size_t y = (topLeft.y + boundRect_.height) / 2;
+    centroMasaManoIni = Point(x,y);
+  }
+  else if (diferenciaTiempo.count() >= 0.3f)
+  {
+    isFirstFrame = true;
+    start = std::chrono::system_clock::now();
+    
+    Point topLeft = boundRect_.tl();
+    size_t x = (topLeft.x + boundRect_.width) / 2;
+    size_t y = (topLeft.y + boundRect_.height) / 2;
+    Point currentPoint(x,y);
+    Point diferencia = currentPoint - centroMasaManoIni;
+    motionCapture(diferencia);
+  }
 }

@@ -14,6 +14,5 @@ public:
   static void line        ( Mat img, Point start, Point end );
 
 private:
-
   double distance(const Point& A, const Point& B);
 };
