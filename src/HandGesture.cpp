@@ -111,7 +111,12 @@ int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Po
         aux   = contours[i].size();
       }
     }
-    drawContours(output_img, contours, index, AZUL, 2, 8, vector<Vec4i>(), 0, Point());
+    drawContours(output_img,
+                contours,
+                index,
+                AZUL, 2, 8,
+                vector<Vec4i>(),
+                0, Point());
   }
 
   assert(index != -1);

@@ -24,7 +24,8 @@ using namespace std;
 
 static auto start = std::chrono::system_clock::now();
  
-class HandGesture {
+class HandGesture 
+{
 
 public:
 
@@ -34,7 +35,6 @@ public:
   float depthError_;
   float motionError_;
 
-  
 public:
 
   HandGesture();

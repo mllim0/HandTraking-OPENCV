@@ -49,12 +49,8 @@ void MyBGSubtractorColor::Trackbar_func(int, void*)
 }
 
 
-void MyBGSubtractorColor::LearnModel() { //Práctica 1
-
-
-  
-
-  
+void MyBGSubtractorColor::LearnModel() { 
+  //Práctica 1
   Mat frame, tmp_frame, hls_frame; //hls es la img de salida
   std::vector<cv::Point> samples_positions;
 
