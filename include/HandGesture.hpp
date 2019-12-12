@@ -14,10 +14,11 @@
 #include "Draw.h"
 #include "BoundingRect.h"
 
-#define LOG(X) std::cerr << X << std::endl
 
 #define PORCEN_DEPTH 0.1
 #define PORCEN_MOTION 0.05
+#define PUNTOS_VERDES handPoints_[0]
+#define PUNTOS_ROJOS handPoints_[1]
 
 using namespace cv;
 using namespace std;
@@ -31,7 +32,8 @@ public:
 
   std::string   movimientoMano_;
   BoundingRect  boundRect_;
-
+  vector<vector<Point>> handPoints_;
+  
   float depthError_;
   float motionError_;
 
@@ -53,4 +55,5 @@ private:
 
   void         motionTracking   ();
   std::string  motionCapture    (const Point& diferencia);
+  double       inclinacionMano  ();
 };

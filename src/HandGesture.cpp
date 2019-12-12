@@ -1,7 +1,9 @@
 #include "HandGesture.hpp"
 
 HandGesture::HandGesture()
-{}
+{
+  handPoints_.resize(2);
+}
 
 double HandGesture::getAngle(Point s, Point e, Point f)
 {
@@ -66,11 +68,13 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     // filtrar y mostrar los defectos de convexidad
     if (angle < 90 && depth > depthError_)
     {
+      PUNTOS_VERDES.push_back(f);
       circle(output_img, f, 5, VERDE, 3);  
       contVerde++;    
     }
     
     if (depth > depthError_){
+      PUNTOS_ROJOS.push_back(s);
       circle(output_img, s, 5, ROJO, 3);
       contRojo++;
     }
@@ -89,8 +93,18 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     putText(output_img, std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
   }
 
+  putText(output_img, std::to_string(inclinacionMano()), Point(10,50), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
 
-  
+  double hipotenusa = boundRect_.height / cos(inclinacionMano());
+  double cateto = sqrt(hipotenusa * hipotenusa - boundRect_.height * boundRect_.height);
+  Point adrian(boundRect_.centro_.x, boundRect_.puntoAngular_.y + boundRect_.height);
+  circle(output_img, boundRect_.puntoAngular_, 5, NEGRO);
+  circle(output_img, adrian, 5, BLANCO );
+  circle(output_img, boundRect_.centro_, 5, NEGRO);
+  Draw::line(output_img, boundRect_.puntoAngular_, adrian);
+  circle(output_img, Point(boundRect_.tl().x + cateto, boundRect_.puntoAngular_.y), 5, cv::Scalar(147));
+  PUNTOS_ROJOS.clear();
+  PUNTOS_VERDES.clear();
   mostrarMotion(output_img);
 }
 
@@ -210,4 +224,18 @@ void HandGesture::motionTracking()
     Point diferencia = boundRect_.centro_ - centroMasaManoIni;
     motionCapture(diferencia);
   }
+}
+
+double HandGesture::inclinacionMano ()
+{
+  Point adrian(boundRect_.centro_.x, boundRect_.puntoAngular_.y - boundRect_.height);
+  double angulo = 0.f;
+  for(int i = 0; i < PUNTOS_VERDES.size(); i++){
+    angulo += getAngle(PUNTOS_VERDES[i], boundRect_.puntoAngular_, adrian);
+  }
+ /* for(int i = 0; i < PUNTOS_ROJOS.size(); i++){
+    angulo += getAngle(PUNTOS_ROJOS[i], boundRect_.puntoAngular_, adrian);
+  }*/
+  angulo = angulo / PUNTOS_VERDES.size();
+  return angulo;
 }

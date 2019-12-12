@@ -83,9 +83,9 @@ int main()
     int dilatation_size = 2;
     Mat element = getStructuringElement(MORPH_RECT, Size(2* dilatation_size + 1 , 2* dilatation_size +1), Point(dilatation_size, dilatation_size));
     erode(bgmask, bgmask, element);
-    // dilatation_size = 1;
-    // element = getStructuringElement(MORPH_RECT, Size(2* dilatation_size + 1 , 2* dilatation_size +1), Point(dilatation_size, dilatation_size));
-    // dilate(bgmask, bgmask, element);
+    dilatation_size = 2;
+    element = getStructuringElement(MORPH_RECT, Size(2* dilatation_size + 1 , 2* dilatation_size +1), Point(dilatation_size, dilatation_size));
+    dilate(bgmask, bgmask, element);
 
 
     // deteccion de las caracter�sticas de la mano

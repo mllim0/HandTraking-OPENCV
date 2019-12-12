@@ -2,10 +2,10 @@
 
 BoundingRect& BoundingRect::operator = (const Rect& rectangulo){
   this->Rect::operator=(rectangulo);
-  centro_.x = tl().x + rectangulo.width / 2;
-  centro_.y = tl().y + rectangulo.height / 2;
-  puntoAngular_.x = tl().x + rectangulo.width;
-  puntoAngular_.y = centro_.y;
+  centro_.x = (rectangulo.tl().x + rectangulo.width) / 2;
+  centro_.y = (rectangulo.tl().y + height) / 2;
+  puntoAngular_.x = (rectangulo.tl().x + rectangulo.width) / 2;
+  puntoAngular_.y = rectangulo.tl().y;
   return *this;
 }
 
