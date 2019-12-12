@@ -14,9 +14,13 @@
 #include "Draw.h"
 #include "BoundingRect.h"
 
+#define LOG(X) std::cerr << X << std::endl
+
 #define PORCEN_DEPTH 0.1
 #define PORCEN_MOTION 0.05
-#define LOG(X) std::cerr << X << std::endl
+#define ROJO  Scalar(0,0,255)
+#define VERDE Scalar(0,255,0)
+#define AZUL Scalar(255,0,0)
 
 using namespace cv;
 using namespace std;

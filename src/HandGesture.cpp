@@ -66,12 +66,12 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     // filtrar y mostrar los defectos de convexidad
     if (angle < 90 && depth > depthError_)
     {
-      circle(output_img, f, 5, Scalar(0,255,0), 3);  
+      circle(output_img, f, 5, VERDE, 3);  
       contVerde++;    
     }
     
     if (depth > depthError_){
-      circle(output_img, s, 5, Scalar(0,0,255), 3);
+      circle(output_img, s, 5, ROJO, 3);
       contRojo++;
     }
   }
@@ -82,11 +82,11 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
 
   if (contVerde >= 1)
   {
-    putText(output_img,std::to_string(contVerde+1), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+    putText(output_img,std::to_string(contVerde+1), Point(10,30), FONT_HERSHEY_PLAIN, 2,  ROJO);
   }
   else 
   {
-    putText(output_img,std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+    putText(output_img,std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  ROJO);
   }
 
 
@@ -111,7 +111,7 @@ int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Po
         aux   = contours[i].size();
       }
     }
-    drawContours(output_img, contours, index, cv::Scalar(255,0,0), 2, 8, vector<Vec4i>(), 0, Point());
+    drawContours(output_img, contours, index, AZUL, 2, 8, vector<Vec4i>(), 0, Point());
   }
 
   assert(index != -1);
@@ -127,7 +127,7 @@ void HandGesture::pintarConvexHull (Mat output_img,
   for (size_t i = 0; i < hull.size(); i++)
   {
     Point pt = contours[index][hull[i]];
-    line(output_img, pt0, pt, Scalar(0, 0, 255), 2, CV_AA);
+    line(output_img, pt0, pt, ROJO, 2, CV_AA);
     pt0 = pt;
   }
 }
@@ -183,7 +183,7 @@ std::string HandGesture::motionCapture(const Point& diferencia)
 
 void HandGesture::mostrarMotion(Mat output_img)
 {
-  putText(output_img, movimientoMano_, Point(80,80), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255));
+  putText(output_img, movimientoMano_, Point(80,80), FONT_HERSHEY_PLAIN, 2,  ROJO);
 }
 
 void HandGesture::motionTracking()
