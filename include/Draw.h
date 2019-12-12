@@ -5,6 +5,11 @@
 #include <opencv2/highgui.hpp>
 
 #define w 400
+#define ROJO  Scalar(0,0,255)
+#define VERDE Scalar(0,255,0)
+#define AZUL Scalar(255,0,0)
+#define TEXT_ESPESOR 3
+
 using namespace cv;
 
 class Draw

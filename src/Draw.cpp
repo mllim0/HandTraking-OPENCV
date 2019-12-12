@@ -1,5 +1,7 @@
 #include "../include/Draw.h"
 
+
+
 double Draw::distance(const Point& A, const Point& B)
 {
   return norm(A-B);
@@ -17,8 +19,9 @@ void Draw::filledCircle(Mat img, Point center)
 
 void Draw::line(Mat img, Point start, Point end)
 {
-  line( img,
+  cv::line( img,
         start,
-        end
+        end,
+        VERDE
     );
 }

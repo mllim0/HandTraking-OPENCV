@@ -82,11 +82,11 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
 
   if (contVerde >= 1)
   {
-    putText(output_img,std::to_string(contVerde+1), Point(10,30), FONT_HERSHEY_PLAIN, 2,  ROJO);
+    putText(output_img, std::to_string(contVerde+1), Point(10,30), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
   }
   else 
   {
-    putText(output_img,std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  ROJO);
+    putText(output_img, std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
   }
 
 
@@ -183,7 +183,7 @@ std::string HandGesture::motionCapture(const Point& diferencia)
 
 void HandGesture::mostrarMotion(Mat output_img)
 {
-  putText(output_img, movimientoMano_, Point(80,80), FONT_HERSHEY_PLAIN, 2,  ROJO);
+  putText(output_img, movimientoMano_, Point(80,80), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
 }
 
 void HandGesture::motionTracking()
