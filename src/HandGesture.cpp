@@ -1,7 +1,10 @@
 #include "HandGesture.hpp"
 
 HandGesture::HandGesture()
-{}
+{
+  paint_ = false;
+  changePaintState_ = true;
+}
 
 double HandGesture::getAngle(Point s, Point e, Point f)
 {
@@ -73,6 +76,9 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     if (depth > depthError_){
       circle(output_img, s, 5, ROJO, 3);
       contRojo++;
+      if (paint_){
+        pPaint_ = s;
+      }
     }
   }
   // Error de los pixeles
@@ -83,15 +89,37 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   if (contVerde >= 1)
   {
     putText(output_img, std::to_string(contVerde+1), Point(10,30), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
+    changePaintState_ = true;
   }
   else 
   {
     putText(output_img, std::to_string(contRojo), Point(10,30), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
+    if(contRojo == 0 && changePaintState_ && !paint_){
+      paint_ = true;
+      changePaintState_ = false;
+    }else if(contRojo == 0 && changePaintState_ && paint_){
+      paint_ = false;
+      changePaintState_ = false;
+      sPaint_.clear();
+    }
   }
 
-
-  
+  if(contRojo == 1 && paint_){
+    sPaint_.insert(std::make_unique<Point>(pPaint_));
+  }
+  if(paint_){
+    putText(output_img, "Pintar activado", Point(50,30), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
+    paintFunction(output_img);
+  }else{
+    putText(output_img, "Pintar desactivado", Point(50,30), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
+  }
   mostrarMotion(output_img);
+}
+
+void HandGesture::paintFunction(Mat output_img){
+  for(std::set<std::unique_ptr<Point> >::iterator it = sPaint_.begin(); it != sPaint_.end(); it++){
+    circle(output_img, **it, 3, AZUL, 3);
+  }
 }
 
 int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Point>>& contours, Mat mask)
@@ -195,7 +223,7 @@ void HandGesture::motionTracking()
 {
   static bool isFirstFrame = false;
   static Point centroMasaManoIni;
-  // Comprobamos que ha pasado el tiempo asignado para hacer un tracking del movimientorealizado
+  // Comprobamos que ha pasado el tiempo asignado para hacer un tracking del movimiento realizado
   auto actualTime = std::chrono::system_clock::now();
   std::chrono::duration<float> diferenciaTiempo = actualTime - start;
   if(isFirstFrame)

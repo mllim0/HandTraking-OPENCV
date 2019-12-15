@@ -10,6 +10,8 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include <set>
+#include <memory>
 
 #include "Draw.h"
 #include "BoundingRect.h"
@@ -35,6 +37,11 @@ public:
   float depthError_;
   float motionError_;
 
+  bool paint_;
+  bool changePaintState_;
+  Point pPaint_;
+  std::set< std::unique_ptr<Point> >sPaint_;
+
 public:
 
   HandGesture();
@@ -53,4 +60,7 @@ private:
 
   void         motionTracking   ();
   std::string  motionCapture    (const Point& diferencia);
+
+  void  paintFunction(Mat output_img);
+
 };
