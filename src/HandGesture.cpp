@@ -218,14 +218,14 @@ void HandGesture::motionTracking()
 
 void HandGesture::pintar(Mat output_image)
 {
-  static std::set<std::shared_ptr<Point>> historialPuntos;
+  static std::set<Point> historialPuntos;
 
   if (PUNTOS_ROJOS.size() == 1 && movimientoMano_ != "Parado")
   {
-    historialPuntos.insert(make_shared<Point>(PUNTOS_ROJOS[0]));
+    historialPuntos.insert(PUNTOS_ROJOS[0]);
     for (auto& punto : historialPuntos)
     {
-      Draw::filledCircle(output_image, *punto);
+      Draw::filledCircle(output_image, punto);
     }
   }
 }
