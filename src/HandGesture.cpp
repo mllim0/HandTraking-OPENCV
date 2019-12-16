@@ -211,8 +211,3 @@ void HandGesture::motionTracking()
     motionCapture(diferencia);
   }
 }
-
-void HandGesture::pintar(Mat output_img)
-{
-  if 
-}
