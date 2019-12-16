@@ -18,6 +18,8 @@
 
 #define PORCEN_DEPTH 0.1
 #define PORCEN_MOTION 0.05
+#define PUNTOS_VERDES handPoints_[0]
+#define PUNTOS_ROJOS handPoints_[1]
 
 using namespace cv;
 using namespace std;
