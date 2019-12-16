@@ -15,7 +15,7 @@ using namespace cv;
 class Draw
 {
 public:
-  static void filledCircle( Mat img, Point center );
+  static void filledCircle( Mat img, Point center, int tam);
   static void line        ( Mat img, Point start, Point end );
 
 private:
