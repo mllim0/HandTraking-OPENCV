@@ -66,11 +66,13 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     // filtrar y mostrar los defectos de convexidad
     if (angle < 90 && depth > depthError_)
     {
+      PUNTOS_VERDES.push_back(f);
       circle(output_img, f, 5, VERDE, 3);  
       contVerde++;    
     }
     
     if (depth > depthError_){
+      PUNTOS_ROJOS.push_back(s);
       circle(output_img, s, 5, ROJO, 3);
       contRojo++;
     }
@@ -90,7 +92,7 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   }
 
 
-  
+  handPoints_.clear();
   mostrarMotion(output_img);
 }
 
