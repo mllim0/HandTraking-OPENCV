@@ -92,8 +92,10 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   }
 
 
-  handPoints_.clear();
+  PUNTOS_ROJOS.clear();
+  PUNTOS_VERDES.clear();
   mostrarMotion(output_img);
+  pintar(output_img);
 }
 
 int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Point>>& contours, Mat mask)
@@ -211,5 +213,19 @@ void HandGesture::motionTracking()
     start = std::chrono::system_clock::now();
     Point diferencia = boundRect_.centro_ - centroMasaManoIni;
     motionCapture(diferencia);
+  }
+}
+
+void HandGesture::pintar(Mat output_image)
+{
+  static std::set<std::shared_ptr<Point>> historialPuntos;
+
+  if (PUNTOS_ROJOS.size() == 1 && movimientoMano_ != "Parado")
+  {
+    historialPuntos.insert(make_shared<Point>(PUNTOS_ROJOS[0]));
+    for (auto& punto : historialPuntos)
+    {
+      Draw::filledCircle(output_image, *punto);
+    }
   }
 }

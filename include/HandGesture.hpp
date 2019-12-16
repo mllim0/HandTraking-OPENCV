@@ -10,6 +10,8 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include <set>
+#include <memory>
 
 #include "Draw.h"
 #include "BoundingRect.h"
@@ -56,4 +58,5 @@ private:
 
   void         motionTracking   ();
   std::string  motionCapture    (const Point& diferencia);
+  void         pintar(Mat output_image);
 };
