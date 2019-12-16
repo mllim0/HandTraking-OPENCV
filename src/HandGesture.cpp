@@ -220,7 +220,7 @@ void HandGesture::pintar(Mat output_image)
 {
   static std::vector<Point> historialPuntos;
 
-  if (PUNTOS_ROJOS.size() == 1 && movimientoMano_ != "Parado"s)
+  if (PUNTOS_ROJOS.size() == 1 && movimientoMano_ != "Parado")
   {
     historialPuntos.push_back(PUNTOS_ROJOS[0]);
     for (auto it = historialPuntos.begin(); it != historialPuntos.end(); it++)
