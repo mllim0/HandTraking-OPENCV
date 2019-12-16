@@ -51,6 +51,7 @@ private:
                             const std::vector<std::vector<Point>>& contours, 
                             int index);
 
+  void         pintar(Mat output_img);
   void         motionTracking   ();
   std::string  motionCapture    (const Point& diferencia);
 };
