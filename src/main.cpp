@@ -20,7 +20,7 @@ int main()
   
   //Abrimos la webcam
   VideoCapture cap;
-  cap.open(0);
+  cap.open(1);
 
   if (!cap.isOpened())
   {
@@ -77,19 +77,15 @@ int main()
     // limpiar la m�scara del fondo de ruido
     //...
     threshold(bgmask,bgmask, 1.f, 255, 0);
-    //medianBlur(bgmask, bgmask, 3);
-    //threshold(bgmask,bgmask, 1.f, 255, 3);
+    medianBlur(bgmask, bgmask, 3);
+    threshold(bgmask,bgmask, 1.f, 255, 3);
     
     int dilatation_size = 2;
     Mat element = getStructuringElement(MORPH_RECT, Size(2* dilatation_size + 1 , 2* dilatation_size +1), Point(dilatation_size, dilatation_size));
-    //erode(bgmask, bgmask, element);
-    // dilatation_size = 1;
-    // element = getStructuringElement(MORPH_RECT, Size(2* dilatation_size + 1 , 2* dilatation_size +1), Point(dilatation_size, dilatation_size));
-     dilate(bgmask, bgmask, element);
-
-dilatation_size = 2;
-    element = getStructuringElement(MORPH_RECT, Size(2* dilatation_size + 1 , 2* dilatation_size +1), Point(dilatation_size, dilatation_size));
     erode(bgmask, bgmask, element);
+    dilatation_size = 2;
+    element = getStructuringElement(MORPH_RECT, Size(2* dilatation_size + 1 , 2* dilatation_size +1), Point(dilatation_size, dilatation_size));
+    dilate(bgmask, bgmask, element);
 
 
     // deteccion de las caracter�sticas de la mano
