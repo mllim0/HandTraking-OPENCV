@@ -31,6 +31,7 @@ public:
 
   std::string   movimientoMano_;
   BoundingRect  boundRect_;
+  vector<vector<Point>> handPoints_;
 
   float depthError_;
   float motionError_;
