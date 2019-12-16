@@ -1,7 +1,9 @@
 #include "HandGesture.hpp"
 
 HandGesture::HandGesture()
-{}
+{
+  handPoints_.resize(2);
+}
 
 double HandGesture::getAngle(Point s, Point e, Point f)
 {
@@ -220,12 +222,18 @@ void HandGesture::pintar(Mat output_image)
 {
   static std::vector<Point> historialPuntos;
 
-  if (PUNTOS_ROJOS.size() == 1 && movimientoMano_ != "Parado")
+  if (PUNTOS_ROJOS.size() == 1)
   {
     historialPuntos.push_back(PUNTOS_ROJOS[0]);
-    for (auto it = historialPuntos.begin(); it != historialPuntos.end(); it++)
-    {
-      circle(output_image, *it, 5, AZUL);
-    }
+  }
+
+  if (PUNTOS_VERDES.size() == 4)
+  {
+    historialPuntos.clear();
+  }
+
+  for (auto it = historialPuntos.begin(); it != historialPuntos.end(); it++)
+  {
+    Draw::filledCircle(output_image, *it);
   }
 }
