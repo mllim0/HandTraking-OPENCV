@@ -1,7 +1,9 @@
 #include "HandGesture.hpp"
 
 HandGesture::HandGesture()
-{}
+{
+  handPoints_.resize(2);
+}
 
 double HandGesture::getAngle(Point s, Point e, Point f)
 {
@@ -66,11 +68,13 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
     // filtrar y mostrar los defectos de convexidad
     if (angle < 90 && depth > depthError_)
     {
+      PUNTOS_VERDES.push_back(f);
       circle(output_img, f, 5, VERDE, 3);  
       contVerde++;    
     }
     
     if (depth > depthError_){
+      PUNTOS_ROJOS.push_back(s);
       circle(output_img, s, 5, ROJO, 3);
       contRojo++;
     }
@@ -90,8 +94,10 @@ void HandGesture::FeaturesDetection(Mat mask, Mat output_img)
   }
 
 
-  
   mostrarMotion(output_img);
+  pintar(output_img);
+  PUNTOS_ROJOS.clear();
+  PUNTOS_VERDES.clear();
 }
 
 int HandGesture::pintarContorno(Mat output_img, const std::vector<std::vector<Point>>& contours, Mat mask)
@@ -211,3 +217,42 @@ void HandGesture::motionTracking()
     motionCapture(diferencia);
   }
 }
+
+void HandGesture::pintar(Mat output_image)
+{
+  static std::vector<std::pair<Point, int>> historialPuntos;
+  static int tam = 0;
+  static bool changePaintState_ = true, paint_ = false;
+
+  if (PUNTOS_ROJOS.size() >= 1)
+  {
+    changePaintState_ = true;
+    if(paint_){
+      putText(output_image, "Pintar activado", Point(50,30), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
+    }else{
+      putText(output_image, "Pintar desactivado", Point(50,30), FONT_HERSHEY_PLAIN, 2,  ROJO, TEXT_ESPESOR);
+    }
+  }
+
+  if(PUNTOS_ROJOS.size() == 0 && changePaintState_ && !paint_){
+    paint_ = true;
+    changePaintState_ = false;
+  }else if(PUNTOS_ROJOS.size() == 0 && changePaintState_ && paint_){
+    paint_ = false;
+    changePaintState_ = false;
+    historialPuntos.clear();
+  } 
+
+  tam = ((boundRect_.height + boundRect_.width) / 2) * 0.03f;
+
+  if (PUNTOS_ROJOS.size() == 1)
+  {
+    historialPuntos.push_back(std::make_pair(PUNTOS_ROJOS[0], tam));
+  }
+
+  for (auto it = historialPuntos.begin(); it != historialPuntos.end(); it++)
+  {
+    Draw::filledCircle(output_image, (*it).first, (*it).second);
+  }
+}
+
